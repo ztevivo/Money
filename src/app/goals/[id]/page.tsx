@@ -105,4 +105,109 @@ export default function GoalDetailPage({ params }: { params: { id: string } }) {
               goal.color === 'primary' ? 'text-primary' :
               goal.color === 'secondary' ? 'text-secondary' :
               'text-tertiary'
-            }`
+            }`} style={{ fontVariationSettings: "'FILL' 1" }}>
+              {goal.icon || 'savings'}
+            </span>
+          </div>
+
+          <h2 className="font-headline-md text-headline-md text-on-surface">{goal.name}</h2>
+
+          {isComplete ? (
+            <div className="mt-2 bg-primary-fixed px-4 py-2 rounded-full inline-block">
+              <span className="text-label-sm font-label-sm text-on-primary-container">🎉 Meta Alcançada!</span>
+            </div>
+          ) : null}
+
+          <div className="mt-4">
+            <ProgressBar
+              value={goal.saved}
+              max={goal.target}
+              color={goal.color}
+              showLabel
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4 mt-4">
+            <div>
+              <p className="text-label-sm font-label-sm text-outline">Guardado</p>
+              <p className="font-headline-md text-headline-md text-primary">
+                {formatCurrency(goal.saved)}
+              </p>
+            </div>
+            <div>
+              <p className="text-label-sm font-label-sm text-outline">Meta</p>
+              <p className="font-headline-md text-headline-md text-on-surface">
+                {formatCurrency(goal.target)}
+              </p>
+            </div>
+          </div>
+        </Card>
+
+        {/* Ações */}
+        <div className="flex gap-3">
+          <Link href={`/contributions/new`} className="flex-1">
+            <Button variant="primary" icon="add" size="md" className="w-full">
+              Contribuir
+            </Button>
+          </Link>
+          <Button
+            variant="ghost"
+            size="md"
+            icon="delete"
+            className="!p-3 !rounded-full"
+            onClick={handleDelete}
+          />
+        </div>
+
+        {/* Histórico */}
+        <div>
+          <h3 className="font-headline-md text-headline-md text-primary mb-4">
+            Histórico
+          </h3>
+          {contributions.length === 0 ? (
+            <p className="text-body-md text-outline text-center py-8">
+              Nenhuma contribuição ainda.
+              <br />
+              <span className="text-label-sm">Seja a primeira pessoa a contribuir!</span>
+            </p>
+          ) : (
+            <div className="space-y-2">
+              {contributions.map((contribution) => (
+                <div
+                  key={contribution.id}
+                  className="bg-surface-container-lowest rounded-lg p-4 flex items-center justify-between gummy-shadow"
+                >
+                  <div>
+                    <p className="font-body-md text-body-md text-on-surface">
+                      {contribution.contributor_name || 'Você'}
+                    </p>
+                    <p className="text-label-sm font-label-sm text-outline">
+                      {formatDate(contribution.created_at)} • {
+                        contribution.source === 'salary' ? 'Salário' :
+                        contribution.source === 'bonus' ? 'Bônus' : 'Outro'
+                      }
+                    </p>
+                  </div>
+                  <span className="font-headline-md text-headline-md text-primary">
+                    +{formatCurrency(contribution.amount)}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </main>
+
+      {showToast && (
+        <Toast
+          message={toastMessage.message}
+          subtitle={toastMessage.subtitle}
+          type={toastMessage.type}
+          onClose={() => setShowToast(false)}
+        />
+      )}
+
+      <BottomNav />
+    </>
+  );
+}
