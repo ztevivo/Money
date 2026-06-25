@@ -8,12 +8,11 @@ interface NavItem {
   icon: string;
   label: string;
   href: string;
-  activeIcon?: string;
 }
 
 const navItems: NavItem[] = [
   { icon: 'home', label: 'Início', href: '/' },
-  { icon: 'bubble_chart', label: 'Potes', href: '/goals', activeIcon: 'bubble_chart' },
+  { icon: 'bubble_chart', label: 'Potes', href: '/goals' },
   { icon: 'face', label: 'Amigos', href: '/community' },
 ];
 
@@ -34,7 +33,20 @@ export function BottomNav() {
             <Link
               key={item.href}
               href={item.href}
-              className={cn(
-                'flex flex-col items-center justify-center py-2 px-4 transition-all active:scale-90 rounded-xl',
+              className={`flex flex-col items-center justify-center py-2 px-4 transition-all active:scale-90 rounded-xl ${
                 active
-                  ?
+                  ? 'bg-primary-container text-on-primary-container'
+                  : 'text-on-surface-variant hover:bg-surface-container-high'
+              }`}
+            >
+              <span className="material-symbols-outlined text-2xl">
+                {item.icon}
+              </span>
+              <span className="text-label-sm font-label-sm mt-1">{item.label}</span>
+            </Link>
+          );
+        })}
+      </div>
+    </nav>
+  );
+}
