@@ -34,11 +34,9 @@ export function Numpad({ value, onChange, maxLength = 10, onClear }: NumpadProps
       newValue = value + key;
     }
 
-    // Remove vírgulas extras e valida tamanho
     const numbersOnly = newValue.replace(/[^0-9]/g, '');
     if (numbersOnly.length > maxLength) return;
 
-    // Formata com vírgula
     if (newValue.includes(',')) {
       const parts = newValue.split(',');
       if (parts[1]?.length > 2) return;
