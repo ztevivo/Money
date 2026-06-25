@@ -1,24 +1,70 @@
 import { supabase } from './client';
-import { Contribution } from '@/types';
+import { Contribution, CreateContributionInput } from '@/types';
 
-export async function createContribution(data: Omit<Contribution, 'id' | 'created_at'>) {
-  const { data: contribution, error } = await supabase
+// ============================================
+// CONTRIBUIÇÕES
+// ============================================
+
+export async function getContributions(goalId?: string): Promise<Contribution[]> {
+  let query = supabase
     .from('contributions')
-    .insert([data])
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (goalId) {
+    query = query.eq('goal_id', goalId);
+  }
+
+  const { data, error } = await query;
+
+  if (error) {
+    console.error('Error fetching contributions:', error);
+    return [];
+  }
+
+  return data || [];
+}
+
+export async function createContribution(input: CreateContributionInput): Promise<Contribution | null> {
+  const { data, error } = await supabase
+    .from('contributions')
+    .insert([input])
     .select()
     .single();
 
-  if (error) throw error;
-  return contribution;
+  if (error) {
+    console.error('Error creating contribution:', error);
+    return null;
+  }
+
+  return data;
 }
 
-export async function getContributions(userId: string) {
+export async function deleteContribution(id: string): Promise<boolean> {
+  const { error } = await supabase
+    .from('contributions')
+    .delete()
+    .eq('id', id);
+
+  if (error) {
+    console.error('Error deleting contribution:', error);
+    return false;
+  }
+
+  return true;
+}
+
+export async function getRecentContributions(limit: number = 5): Promise<Contribution[]> {
   const { data, error } = await supabase
     .from('contributions')
     .select('*')
-    .eq('user_id', userId)
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: false })
+    .limit(limit);
 
-  if (error) throw error;
-  return data;
+  if (error) {
+    console.error('Error fetching recent contributions:', error);
+    return [];
+  }
+
+  return data || [];
 }
